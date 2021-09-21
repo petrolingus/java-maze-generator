@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 
 public class ImagTest {
 
@@ -20,19 +21,16 @@ public class ImagTest {
 
         long start = System.nanoTime();
 
-        BufferedImage bi = (BufferedImage) getImageFromArray(pixels, size, size);
-        File outfile = new File("saved.jpg");
-        ImageIO.write(bi, "jpg", outfile);
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+//        WritableRaster raster = (WritableRaster) image.getData();
+//        raster.setPixels(0, 0, size, size, pixels);
+//        image.setData(raster);
 
-        long stop = System.nanoTime() - start;
-        System.out.println((stop / 1_000_000) + " ms");
+        File outfile = new File("saved.bmp");
+        ImageIO.write(image, "bmp", outfile);
+
+        long stop = System.nanoTime();
+        System.out.println(Duration.ofNanos(stop - start).toMillis() + " ms");
     }
 
-    public static Image getImageFromArray(int[] pixels, int w, int h) {
-        BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        WritableRaster raster = (WritableRaster) image.getData();
-        raster.setPixels(0, 0, w, h, pixels);
-        image.setData(raster);
-        return image;
-    }
 }
