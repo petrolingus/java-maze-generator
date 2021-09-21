@@ -1,11 +1,23 @@
+import image.BMP;
+
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.random.RandomGenerator;
 
 public class MazeAlgorithm {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
+        long start = System.nanoTime();
+        createMaze();
+        long stop = System.nanoTime();
+        System.out.print("THE TI|\\/|E OF \\/\\/ORKING: ");
+        System.out.println(Duration.ofNanos(stop - start).toMillis() + " ms");
+
+    }
+
+    private static void createMaze() throws IOException {
 //        RandomGenerator randomGenerator = RandomGenerator.of("L32X64MixRandom");
         RandomGenerator randomGenerator = RandomGenerator.of("SplittableRandom");
 //        RandomGenerator randomGenerator = RandomGenerator.getDefault();
@@ -124,6 +136,50 @@ public class MazeAlgorithm {
 //            System.out.println(Arrays.toString(maze[i]));
 //        }
 
+        int imageSize = size * 4;
+        int[][] rgbValues = new int[imageSize][imageSize];
+
+//        for (int i = 0; i < imageSize; i++) {
+//            Arrays.fill(rgbValues[i], 255); // 33554431
+//        }
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+//                int r = randomGenerator.nextInt(256);
+//                int g = randomGenerator.nextInt(256);
+//                int b = randomGenerator.nextInt(256);
+//                rgbValues[i][j] = r | g << 8 | b << 16;
+                int code = maze[i][j];
+                int up = code & 1;
+                int bot = code & 2;
+                int right = code & 4;
+                int left = code & 8;
+                int x = 4 * j;
+                int y = 4 * i;
+                rgbValues[y + 1][x + 1] = 33554431;
+                rgbValues[y + 2][x + 2] = 33554431;
+                rgbValues[y + 1][x + 2] = 33554431;
+                rgbValues[y + 2][x + 1] = 33554431;
+                if (up != 0) {
+                    rgbValues[y][x + 1] = 33554431;
+                    rgbValues[y][x + 2] = 33554431;
+                }
+                if (bot != 0) {
+                    rgbValues[y + 3][x + 1] = 33554431;
+                    rgbValues[y + 3][x + 2] = 33554431;
+                }
+                if (right != 0) {
+                    rgbValues[y + 1][x + 3] = 33554431;
+                    rgbValues[y + 2][x + 3] = 33554431;
+                }
+                if (left != 0) {
+                    rgbValues[y + 1][x] = 33554431;
+                    rgbValues[y + 2][x] = 33554431;
+                }
+            }
+        }
+        BMP bmp = new BMP();
+        bmp.saveBMP("image.bmp", rgbValues);
     }
 
 }
