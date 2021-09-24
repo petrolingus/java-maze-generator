@@ -13,7 +13,9 @@ public class Main {
 
         RandomGenerator randomGenerate = RandomGenerator.of("SplittableRandom");
 
-        int size = 50;
+        int size = 4096;
+
+        size += 2;
 
         int[][] maze = new int[size][size];
         int[][] virtualMaze = new int[size][size];
@@ -52,11 +54,16 @@ public class Main {
             int left = maze[cy][cx - 1];
 
             if ((up + down + right + left) == 4) {
-//                virtualMaze[cy][cx] &= 15;
                 maze[cy][cx] = 1;
+                if (isPath) {
+                    virtualMaze[cy][cx] &= 15;
+                }
                 pathPointer--;
                 cx = pathX[pathPointer];
                 cy = pathY[pathPointer];
+                if (isPath) {
+                    virtualMaze[cy][cx] &= 15;
+                }
                 if (pathPointer == 1) {
                     break;
                 }
