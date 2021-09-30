@@ -9,6 +9,8 @@ public class Main {
 
     public static void main(String[] args) {
 
+        long theBegin = System.nanoTime();
+
         long start = System.nanoTime();
 
         RandomGenerator randomGenerate = RandomGenerator.of("SplittableRandom");
@@ -56,13 +58,13 @@ public class Main {
             if ((up + down + right + left) == 4) {
                 maze[cy][cx] = 1;
                 if (isPath) {
-                    virtualMaze[cy][cx] &= 15;
+                    virtualMaze[cy][cx] &= 31;
                 }
                 pathPointer--;
                 cx = pathX[pathPointer];
                 cy = pathY[pathPointer];
                 if (isPath) {
-                    virtualMaze[cy][cx] &= 15;
+                    virtualMaze[cy][cx] &= 31;
                 }
                 if (pathPointer == 1) {
                     break;
@@ -93,10 +95,10 @@ public class Main {
                 isPath = false;
             }
 
-            virtualMaze[cy][cx] |= vd[direction] | ((isPath) ? 16 : 0);
+            virtualMaze[cy][cx] |= vd[direction] | ((isPath) ? 48 : 0);
             cx = cx + dx[direction];
             cy = cy + dy[direction];
-            virtualMaze[cy][cx] |= ivd[direction] | ((isPath) ? 16 : 0);
+            virtualMaze[cy][cx] |= ivd[direction] | ((isPath) ? 48 : 0);
 
         }
 
@@ -120,6 +122,9 @@ public class Main {
 
         generateImage(virtualMaze, "image");
 
+        long theEnd = System.nanoTime();
+        System.out.println("Save to file: " + Duration.ofNanos(theEnd - theBegin).toMillis() + " ms");
+
     }
 
     private static void generateImage(int[][] maze, String name) {
@@ -133,6 +138,7 @@ public class Main {
         int[][] rgbValues = new int[imageSize + 2][imageSize + 2];
 
         int red = 255;
+        int green = 255 << 8;
         int white = 33554431;
 
         for (int i = 0; i < fixedSize; i++) {
@@ -143,10 +149,14 @@ public class Main {
                 int bot = code & 2;
                 int right = code & 4;
                 int left = code & 8;
-                int path = code & 16;
+                int visited = code & 16;
+                int path = code & 32;
                 int x = cellSize * j;
                 int y = cellSize * i;
-                int color = (path != 0) ? red : white;
+                int color = (visited != 0) ? red : white;
+                if (color == 255 && path != 0) {
+                    color = green;
+                }
                 for (int k = 1; k < cellSizeMinusOne; k++) {
                     for (int l = 1; l < cellSizeMinusOne; l++) {
                         rgbValues[x + l + 1][y + k + 1] = color;
